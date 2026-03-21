@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BellIcon } from 'lucide-react'
 
 export default function Navbar() {
   const { user, profile, signOut } = useAuth()
@@ -30,85 +29,60 @@ export default function Navbar() {
   }
 
   return (
-    <header className="border-b">
-      <nav className="container mx-auto flex items-center justify-between py-4">
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+      <nav className="container mx-auto flex items-center justify-between py-3">
         <div className="">
           <Logo />
         </div>
-        <div className="hidden md:flex font-semibold">
+        <div className="hidden md:flex font-medium text-sm">
           {profile?.role === "worker" && (
-            <ul className="flex items-center gap-6">
-              <li>
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-600 hover:text-gray-800"
-                  }
-                >
-                  Jobs
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/applications"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-600 hover:text-gray-800"
-                  }
-                >
-                  My Applications
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/saved-jobs"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-600 hover:text-gray-800"
-                  }
-                >
-                  Saved
-                </NavLink>
-              </li>
+            <ul className="flex items-center gap-1">
+              {[
+                { to: "/", label: "Jobs" },
+                { to: "/applications", label: "My Applications" },
+                { to: "/saved-jobs", label: "Saved" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <NavLink
+                    to={to}
+                    end={to === "/"}
+                    className={({ isActive }) =>
+                      isActive
+                        ? "relative px-3 py-1.5 rounded-md text-primary bg-primary/8 font-semibold"
+                        : "px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                </li>
+              ))}
             </ul>
           )}
           {profile?.role === "employer" && (
-            <ul className="flex items-center gap-6">
-              <li>
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-600 hover:text-gray-800"
-                  }
-                >
-                  Dashboard
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/jobs/new"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-600 hover:text-gray-800"
-                  }
-                >
-                  Post a Job
-                </NavLink>
-              </li>
+            <ul className="flex items-center gap-1">
+              {[
+                { to: "/dashboard", label: "Dashboard" },
+                { to: "/jobs/new", label: "Post a Job" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      isActive
+                        ? "px-3 py-1.5 rounded-md text-primary bg-primary/8 font-semibold"
+                        : "px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                </li>
+              ))}
             </ul>
           )}
         </div>
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <BellIcon className="w-6 h-6 text-gray-600 cursor-pointer" />
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>

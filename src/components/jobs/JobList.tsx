@@ -17,7 +17,7 @@ export function JobList() {
 
       let query = supabase
         .from("job_posts")
-        .select("*")
+        .select("*, trade:trades(name)")
         .eq("status", "open")
         .order("created_at", { ascending: false })
 
@@ -43,9 +43,9 @@ export function JobList() {
         return
       }
 
-      let results = data as JobPost[]
+      let results = data as (JobPost & { trade: { name: string } | null })[]
       if (trade) {
-        results = results.filter(() => true) // placeholder until trade join is wired up
+        results = results.filter(j => j.trade?.name === trade)
       }
 
       setJobs(results)
@@ -55,12 +55,26 @@ export function JobList() {
     fetchJobs()
   }, [searchParams])
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading jobs…</p>
+  if (loading) return (
+    <div className="flex flex-col gap-3">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-28 rounded-xl border bg-card animate-pulse" />
+      ))}
+    </div>
+  )
   if (error) return <p className="text-sm text-destructive">{error}</p>
-  if (jobs.length === 0) return <p className="text-sm text-muted-foreground">No jobs found.</p>
+  if (jobs.length === 0) return (
+    <div className="rounded-xl border bg-card px-6 py-12 text-center space-y-2">
+      <p className="font-medium">No jobs found</p>
+      <p className="text-sm text-muted-foreground">Try adjusting your filters.</p>
+    </div>
+  )
 
   return (
     <div className="flex flex-col gap-3">
+      <p className="text-sm text-muted-foreground font-medium px-1">
+        {jobs.length} {jobs.length === 1 ? "job" : "jobs"} found
+      </p>
       {jobs.map(job => (
         <JobCard key={job.id} job={job} />
       ))}

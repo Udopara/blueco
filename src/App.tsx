@@ -17,8 +17,6 @@ import EditJob from './pages/employer/EditJob'
 import JobApplications from './pages/employer/JobApplications'
 import CompanyProfile from './pages/employer/CompanyProfile'
 
-import Notifications from './pages/Notifications'
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -42,8 +40,6 @@ export default function App() {
             <Route path="/jobs/:id/edit" element={<EditJob />} />
             <Route path="/jobs/:id/applications" element={<JobApplications />} />
             <Route path="/company" element={<CompanyProfile />} />
-            {/* Shared */}
-            <Route path="/notifications" element={<Notifications />} />
           </Route>
         </Route>
       </Routes>

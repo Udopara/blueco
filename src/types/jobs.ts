@@ -14,7 +14,7 @@ export interface Skill {
 }
 
 export type JobType = 'full_time' | 'part_time' | 'contract' | 'casual'
-export type PayType = 'hourly' | 'daily' | 'fixed'
+export type PayType = 'Hourly' | 'Weekly' | 'Daily' | 'Monthly' | 'One Time'
 export type JobStatus = 'draft' | 'open' | 'closed' | 'filled'
 
 export interface JobPost {

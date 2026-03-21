@@ -71,8 +71,9 @@ export function JobSearch() {
   )
 
   return (
-    <Card>
+    <Card className="shadow-sm">
       <CardContent>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Filter Jobs</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
             <label htmlFor="job-q" className="text-sm font-medium">Keyword</label>
@@ -127,7 +128,7 @@ export function JobSearch() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium">Pay rate ($/hr)</span>
+            <span className="text-sm font-medium">Pay rate (RWF)</span>
             <div className="flex items-center gap-2">
               <label htmlFor="job-min-pay" className="sr-only">Min pay</label>
               <Input
