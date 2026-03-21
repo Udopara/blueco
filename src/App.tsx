@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import ProtectedRoute from "./pages/auth/ProtectedRoute";
 
 import JobFeed from './pages/worker/JobFeed'
 import JobDetail from './pages/worker/JobDetail'
@@ -27,23 +28,23 @@ export default function App() {
         <Route path="/register" element={<Register />} />
 
         {/* All other pages use shared layout with navbar */}
-        <Route element={<Layout />}>
-          {/* Worker */}
-          <Route path="/" element={<JobFeed />} />
-          <Route path="/jobs/:id" element={<JobDetail />} />
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/saved-jobs" element={<SavedJobs />} />
-          <Route path="/profile" element={<WorkerProfile />} />
-
-          {/* Employer */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/jobs/new" element={<PostJob />} />
-          <Route path="/jobs/:id/edit" element={<EditJob />} />
-          <Route path="/jobs/:id/applications" element={<JobApplications />} />
-          <Route path="/company" element={<CompanyProfile />} />
-
-          {/* Shared */}
-          <Route path="/notifications" element={<Notifications />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            {/* Worker */}
+            <Route path="/" element={<JobFeed />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/applications" element={<Applications />} />
+            <Route path="/saved-jobs" element={<SavedJobs />} />
+            <Route path="/profile" element={<WorkerProfile />} />
+            {/* Employer */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/jobs/new" element={<PostJob />} />
+            <Route path="/jobs/:id/edit" element={<EditJob />} />
+            <Route path="/jobs/:id/applications" element={<JobApplications />} />
+            <Route path="/company" element={<CompanyProfile />} />
+            {/* Shared */}
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
