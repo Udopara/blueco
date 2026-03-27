@@ -30,7 +30,7 @@ export function JobList() {
 
       if (q) query = query.ilike("title", `%${q}%`)
       if (location) query = query.ilike("location", `%${location}%`)
-      if (type) query = query.eq("job_type", type.toLowerCase().replace("-", "_"))
+      if (type) query = query.eq("job_type", type)
       if (minPay) query = query.gte("pay_rate", Number(minPay))
       if (maxPay) query = query.lte("pay_rate", Number(maxPay))
 

@@ -61,12 +61,13 @@ export function RegisterForm({
       return
     }
 
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({ id: userId, role, full_name: fullName })
+    const roleTable = role === "employer" ? "employer_profiles" : "worker_profiles"
+    const { error: roleProfileError } = await supabase
+      .from(roleTable)
+      .insert({ id: userId })
 
-    if (profileError) {
-      setError(profileError.message)
+    if (roleProfileError) {
+      setError(roleProfileError.message)
       setLoading(false)
       return
     }

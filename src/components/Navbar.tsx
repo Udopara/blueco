@@ -1,5 +1,8 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BellIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useNotifications } from '@/hooks/useNotifications'
 import Logo from './Logo'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -15,6 +18,11 @@ import {
 export default function Navbar() {
   const { user, profile, signOut } = useAuth()
   const navigate = useNavigate()
+  const { unreadCount, fetchNotifications } = useNotifications()
+
+  useEffect(() => {
+    if (user) fetchNotifications()
+  }, [user])
 
   const userInitials = profile?.full_name
     ? profile.full_name
@@ -83,6 +91,14 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              <Link to="/notifications" className="relative text-muted-foreground hover:text-foreground transition-colors">
+                <BellIcon className="size-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
@@ -96,14 +112,10 @@ export default function Navbar() {
                     <div className="md:hidden">
                       {profile?.role === "employer" && (
                         <>
-                          <DropdownMenuItem
-                            onClick={() => navigate("/dashboard")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                             Dashboard
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => navigate("/jobs/new")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/jobs/new")}>
                             Post a Job
                           </DropdownMenuItem>
                         </>
@@ -113,20 +125,20 @@ export default function Navbar() {
                           <DropdownMenuItem onClick={() => navigate("/")}>
                             Jobs
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => navigate("/applications")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/applications")}>
                             My Applications
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => navigate("/saved-jobs")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/saved-jobs")}>
                             Saved Jobs
                           </DropdownMenuItem>
                         </>
                       )}
                       <DropdownMenuSeparator />
                     </div>
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                      My Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       Sign Out
                     </DropdownMenuItem>

@@ -20,4 +20,18 @@ const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   return children ? <>{children}</> : <Outlet />;
 };
 
+export function WorkerRoute() {
+  const { profile, loading } = useAuth();
+  if (loading) return null;
+  if (profile?.role === "employer") return <Navigate to="/dashboard" replace />;
+  return <Outlet />;
+}
+
+export function EmployerRoute() {
+  const { profile, loading } = useAuth();
+  if (loading) return null;
+  if (profile?.role === "worker") return <Navigate to="/" replace />;
+  return <Outlet />;
+}
+
 export default ProtectedRoute;

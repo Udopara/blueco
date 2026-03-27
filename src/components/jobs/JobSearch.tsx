@@ -24,7 +24,12 @@ const TRADES = [
   "General Labour",
 ]
 
-const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Casual", "Apprenticeship"]
+const JOB_TYPES = [
+  { value: "full_time",  label: "Full-time" },
+  { value: "part_time",  label: "Part-time" },
+  { value: "contract",   label: "Contract" },
+  { value: "casual",     label: "Casual" },
+]
 
 export function JobSearch() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -121,7 +126,7 @@ export function JobSearch() {
               <SelectContent>
                 <SelectItem value="All job types">All job types</SelectItem>
                 {JOB_TYPES.map(t => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                  <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

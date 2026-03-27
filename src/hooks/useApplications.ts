@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Application, ApplicationStatus } from '@/types'
+import { createNotification } from '@/lib/notifications'
 
 type ApplicationInsert = Pick<Application, 'job_post_id' | 'worker_id' | 'cover_note'>
 
@@ -51,7 +52,25 @@ export function useApplications() {
       .select()
       .single()
 
-    if (error) setError(error.message)
+    if (error) { setError(error.message); return { data, error } }
+
+    // Notify employer of new application
+    const { data: job } = await supabase
+      .from('job_posts')
+      .select('employer_id, title')
+      .eq('id', payload.job_post_id)
+      .single()
+
+    if (job) {
+      await createNotification({
+        user_id:       job.employer_id,
+        type:          'new_application',
+        title:         'New application received',
+        body:          `Someone applied to: ${job.title}`,
+        resource_type: 'application',
+        resource_id:   data.id,
+      })
+    }
 
     return { data, error }
   }
@@ -68,6 +87,45 @@ export function useApplications() {
 
     if (error) setError(error.message)
     else setApplications(prev => prev.map(a => a.id === id ? { ...a, status } : a))
+
+    // Notify the relevant party of status change
+    if (!error && data) {
+      // Worker-initiated statuses — notify the employer
+      if (status === 'accepted') {
+        const { data: job } = await supabase
+          .from('job_posts')
+          .select('employer_id')
+          .eq('id', data.job_post_id)
+          .single()
+        if (job) {
+          await createNotification({
+            user_id:       job.employer_id,
+            type:          'offer_accepted',
+            title:         'A worker accepted your offer!',
+            resource_type: 'application',
+            resource_id:   id,
+          })
+        }
+      } else {
+        // Employer-initiated statuses — notify the worker
+        const workerLabels: Record<string, string> = {
+          reviewed:    'Your application is being reviewed',
+          shortlisted: 'You have been shortlisted!',
+          offered:     'You have received a job offer!',
+          rejected:    'Your application was not selected',
+        }
+        const title = workerLabels[status]
+        if (title) {
+          await createNotification({
+            user_id:       data.worker_id,
+            type:          'application_status',
+            title,
+            resource_type: 'application',
+            resource_id:   id,
+          })
+        }
+      }
+    }
 
     return { data, error }
   }

@@ -7,6 +7,7 @@ import {
   ClockIcon,
   FileTextIcon,
   XCircleIcon,
+  CheckCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
 } from 'lucide-react'
@@ -61,10 +62,11 @@ const WITHDRAWABLE: ApplicationStatus[] = ['pending', 'reviewed', 'shortlisted']
 
 export default function Applications() {
   const { user } = useAuth()
-  const { applications, loading, error, fetchMyApplications, withdrawApplication, deleteApplication } = useApplications()
+  const { applications, loading, error, fetchMyApplications, withdrawApplication, updateApplicationStatus, deleteApplication } = useApplications()
   const [tab, setTab] = useState<TabKey>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [withdrawing, setWithdrawing] = useState<string | null>(null)
+  const [responding, setResponding] = useState<string | null>(null)
 
   useEffect(() => { fetchMyApplications() }, [])
 
@@ -76,6 +78,18 @@ export default function Applications() {
 
   async function handleDelete(id: string) {
     await deleteApplication(id)
+  }
+
+  async function handleAccept(id: string) {
+    setResponding(id)
+    await updateApplicationStatus(id, 'accepted')
+    setResponding(null)
+  }
+
+  async function handleDecline(id: string) {
+    setResponding(id)
+    await updateApplicationStatus(id, 'rejected')
+    setResponding(null)
   }
 
   const rich = applications as RichApplication[]
@@ -172,6 +186,7 @@ export default function Applications() {
               : null
             const isExpanded = expandedId === app.id
             const isWithdrawable = WITHDRAWABLE.includes(app.status)
+            const isOffered = app.status === 'offered'
             const isClosed = CLOSED_STATUSES.includes(app.status)
 
             return (
@@ -251,8 +266,31 @@ export default function Applications() {
                   )}
 
                   {/* Actions */}
-                  {(isWithdrawable || isClosed) && (
+                  {(isWithdrawable || isOffered || isClosed) && (
                     <div className="border-t px-4 py-2.5 flex items-center gap-2 bg-muted/20">
+                      {isOffered && (
+                        <>
+                          <Button
+                            size="sm"
+                            className="text-xs h-7 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            disabled={responding === app.id}
+                            onClick={() => handleAccept(app.id)}
+                          >
+                            <CheckCircleIcon className="size-3.5" />
+                            {responding === app.id ? 'Accepting…' : 'Accept offer'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-xs h-7 gap-1.5"
+                            disabled={responding === app.id}
+                            onClick={() => handleDecline(app.id)}
+                          >
+                            <XCircleIcon className="size-3.5" />
+                            Decline
+                          </Button>
+                        </>
+                      )}
                       {isWithdrawable && (
                         <Button
                           size="sm"
