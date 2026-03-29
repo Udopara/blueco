@@ -62,9 +62,18 @@ export function useJobPosts() {
     setLoading(true)
     setError(null)
 
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      setError('Not authenticated')
+      setLoading(false)
+      return { data: null, error: new Error('Not authenticated') }
+    }
+
     const { data, error } = await supabase
       .from('job_posts')
       .select(`*, trade:trades(name), _applications_count:applications(count)`)
+      .eq('employer_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) setError(error.message)
