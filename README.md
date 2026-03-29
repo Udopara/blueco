@@ -62,28 +62,13 @@ The app requires a Supabase project for authentication, the database, and file s
 
 ### 3.3 Create the Database Schema
 
-The app expects the following tables in your Supabase database:
-
-```
-profiles
-worker_profiles
-employer_profiles
-trades
-skills
-job_posts
-job_perks
-applications
-saved_jobs
-reviews
-notifications
-```
-
-To create them:
-
 1. In the Supabase dashboard, open the **SQL Editor**.
-2. Run your migration SQL (create tables, set up Row-Level Security policies, and seed the `trades` and `skills` reference data).
+2. Copy the entire contents of [`supabase/schema.sql`](./supabase/schema.sql) and run it.
+   - This creates all tables, enums, RLS policies, and the trigger that auto-creates a profile row when a user registers.
+3. Once the schema is applied, copy the entire contents of [`supabase/seed.sql`](./supabase/seed.sql) and run it.
+   - This populates the `trades` and `skills` reference tables (Electrician, Plumber, Welder, etc.) that the job feed filters depend on.
 
-> If a `schema.sql` or `migrations/` folder is present in this repo, run those files in order. If not, refer to the SRS (`SRS.md`) for the full entity relationship model and create the tables accordingly.
+Both files are safe to re-run — they use `IF NOT EXISTS` and `ON CONFLICT DO NOTHING`.
 
 ### 3.4 Configure Storage (optional — for avatars)
 
